@@ -1,5 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd"></mule>
+<mule xmlns:tls="http://www.mulesoft.org/schema/mule/tls" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd">
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="0c4f670b-830c-406b-9244-8de09a9a0b0d">
+		<http:request-connection host="0.0.0.0" port="8081" protocol="HTTPS">
+			<tls:context >
+				<tls:trust-store path="client-truststore.ts" password="Monday$100" type="jks" />
+			</tls:context>
+		</http:request-connection>
+	</http:request-config>
+	<http:listener-config name="HTTP_Listener_config1" doc:name="HTTP Listener config" doc:id="dee14dbe-35c1-4a07-ac44-d2e0091d2715" >
+		<http:listener-connection host="0.0.0.0" port="8082"/>
+	</http:listener-config>
+	<flow name="client-appFlow" doc:id="c2ffbd96-d39b-4cde-bfa0-a153c64418f6" >
+		<http:listener doc:name="Listener" doc:id="7e08dd43-db77-4514-8ba8-0831bf79260b" config-ref="HTTP_Listener_config1" path="/clientapp"/>
+		<logger level="INFO" doc:name="Logger" doc:id="68aa99fd-5a3d-45e1-ba18-dd1d87bd865d" message="ClientApp: Initiate Client Request"/>
+		<http:request method="GET" doc:name="Request" doc:id="f666f6b1-c9a8-46d9-a2dd-7d41cdcacba5" config-ref="HTTP_Request_configuration" path="/serverapp"/>
+		<logger level="INFO" doc:name="Logger" doc:id="92062ae5-c67b-47dc-bb1e-4ff2ca37ccc7" message="ClientApp Request Ended"/>
+	</flow>
+</mule>
